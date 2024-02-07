@@ -23,6 +23,8 @@
 import java.util.Observable;//
 
 public class WeatherStation extends Observable implements Runnable {
+    private KelvinTempSensorAdapter ktsa = new KelvinTempSensorAdapter();
+    private FahrenheitSensorAdapter ftsa = new FahrenheitSensorAdapter();
 
     private final KelvinTempSensor sensor; // Temperature sensor.
     private final Barometer bar; // Temperature sensor
@@ -80,13 +82,20 @@ public class WeatherStation extends Observable implements Runnable {
      * Return the current reading in degrees Kelvin as a
      * double precision number.
      */
+    //public synchronized double getKelvin() {
+    // return currentReading / 100.0;
+    //}
     public synchronized double getKelvin() {
-        return currentReading / 100.0;
+        return ktsa.getCelsius();
     }
 
+    //public synchronized double getFahrenheit() {
+    //  return getCelsius() * (9 / 5) + 32;
+    // }
     public synchronized double getFahrenheit() {
-        return getCelsius() * (9 / 5) + 32;
+        return ftsa.getFahrenheit();
     }
+
 
     public synchronized double getBar() {
         return currentBarometar;
@@ -98,8 +107,7 @@ public class WeatherStation extends Observable implements Runnable {
 
     public static void main(String[] args) {
         WeatherStation weatherStation = new WeatherStation();
-        KelvinTempSensorAdapter ktsa = new KelvinTempSensorAdapter();
-        FahrenheitSensorAdapter ftsa = new FahrenheitSensorAdapter();
+
         Thread t = new Thread(weatherStation);
         SwingUI ui1 = new SwingUI(weatherStation);
 
