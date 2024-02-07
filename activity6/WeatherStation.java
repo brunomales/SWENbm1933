@@ -20,17 +20,17 @@
  * objects whenever its state changes. Convenience functions are provided
  * to access the temperature in different schemes (Celsius, Kelvin, etc.)
  */
-import java.util.Observable ;//
+import java.util.Observable;//
 
 public class WeatherStation extends Observable implements Runnable {
 
-    private final KelvinTempSensor sensor ; // Temperature sensor.
+    private final KelvinTempSensor sensor; // Temperature sensor.
     private final Barometer bar; // Temperature sensor
 
-    private final long PERIOD = 1000 ;      // 1 sec = 1000 ms
-    private final int KTOC = -27315 ;       // Kelvin to Celsius conversion.
+    private final long PERIOD = 1000; // 1 sec = 1000 ms
+    private final int KTOC = -27315; // Kelvin to Celsius conversion.
 
-    private int currentReading ;
+    private int currentReading;
     private double currentBarometar;
 
     /*
@@ -38,8 +38,8 @@ public class WeatherStation extends Observable implements Runnable {
      * object it will use.
      */
     public WeatherStation() {
-        sensor = new KelvinTempSensor() ;
-        currentReading = sensor.reading() ;
+        sensor = new KelvinTempSensor();
+        currentReading = sensor.reading();
         bar = new Barometer();
         currentBarometar = bar.pressure();
     }
@@ -50,20 +50,21 @@ public class WeatherStation extends Observable implements Runnable {
      * sensor, and notifies registered Observers of the change.
      */
     public void run() {
-        while( true ) {
+        while (true) {
             try {
-                Thread.sleep(PERIOD) ;
-            } catch (Exception e) {}    // ignore exceptions
+                Thread.sleep(PERIOD);
+            } catch (Exception e) {
+            } // ignore exceptions
 
             /*
              * Get next reading and notify any Observers.
              */
-            synchronized(this) {
-                currentReading = sensor.reading() ;
+            synchronized (this) {
+                currentReading = sensor.reading();
                 currentBarometar = bar.pressure();
             }
-            setChanged() ;
-            notifyObservers() ;
+            setChanged();
+            notifyObservers();
         }
     }
 
@@ -71,27 +72,27 @@ public class WeatherStation extends Observable implements Runnable {
      * Return the current reading in degrees celsius as a
      * double precision number.
      */
-    // public synchronized double getCelsius() {
-    //     return (currentReading + KTOC) / 100.0 ;
-    // }
+    public synchronized double getCelsius() {
+        return (currentReading + KTOC) / 100.0;
+    }
 
     /*
      * Return the current reading in degrees Kelvin as a
      * double precision number.
      */
-    // public synchronized double getKelvin() {
-    //     return currentReading / 100.0 ;
-    // }
-
-    public synchronized double getFahrenheit() {
-        return getCelsius() * (9/5) + 32;
+    public synchronized double getKelvin() {
+        return currentReading / 100.0;
     }
 
-    public synchronized double getBar(){
+    public synchronized double getFahrenheit() {
+        return getCelsius() * (9 / 5) + 32;
+    }
+
+    public synchronized double getBar() {
         return currentBarometar;
     }
 
-    public synchronized double getBarM(){
+    public synchronized double getBarM() {
         return getBar() * 33.86;
     }
 
@@ -99,7 +100,6 @@ public class WeatherStation extends Observable implements Runnable {
         WeatherStation weatherStation = new WeatherStation();
         KelvinTempSensorAdapter ktsa = new KelvinTempSensorAdapter();
         Thread t = new Thread(weatherStation);
-        TextUI ui = new TextUI(weatherStation);
         SwingUI ui1 = new SwingUI(weatherStation);
 
         t.start();

@@ -71,4 +71,8 @@ public class Barometer implements IBarometar{
 
         return currentPressure ;
     }
+
+    public double getBarM() {
+        return pressure() * 33.86;
+    }
 }
