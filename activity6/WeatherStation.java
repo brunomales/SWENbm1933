@@ -71,17 +71,17 @@ public class WeatherStation extends Observable implements Runnable {
      * Return the current reading in degrees celsius as a
      * double precision number.
      */
-    public synchronized double getCelsius() {
-        return (currentReading + KTOC) / 100.0 ;
-    }
+    // public synchronized double getCelsius() {
+    //     return (currentReading + KTOC) / 100.0 ;
+    // }
 
     /*
      * Return the current reading in degrees Kelvin as a
      * double precision number.
      */
-    public synchronized double getKelvin() {
-        return currentReading / 100.0 ;
-    }
+    // public synchronized double getKelvin() {
+    //     return currentReading / 100.0 ;
+    // }
 
     public synchronized double getFahrenheit() {
         return getCelsius() * (9/5) + 32;
@@ -97,6 +97,7 @@ public class WeatherStation extends Observable implements Runnable {
 
     public static void main(String[] args) {
         WeatherStation weatherStation = new WeatherStation();
+        KelvinTempSensorAdapter ktsa = new KelvinTempSensorAdapter();
         Thread t = new Thread(weatherStation);
         TextUI ui = new TextUI(weatherStation);
         SwingUI ui1 = new SwingUI(weatherStation);
