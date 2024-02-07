@@ -99,6 +99,7 @@ public class WeatherStation extends Observable implements Runnable {
     public static void main(String[] args) {
         WeatherStation weatherStation = new WeatherStation();
         KelvinTempSensorAdapter ktsa = new KelvinTempSensorAdapter();
+        FahrenheitSensorAdapter ftsa = new FahrenheitSensorAdapter();
         Thread t = new Thread(weatherStation);
         SwingUI ui1 = new SwingUI(weatherStation);
 
