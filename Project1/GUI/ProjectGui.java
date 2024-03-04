@@ -1,5 +1,5 @@
 // ProjectGui.java
-package project;
+package MVC;
 
 import javafx.application.Application;
 import javafx.geometry.*;

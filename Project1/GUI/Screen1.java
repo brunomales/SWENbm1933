@@ -1,5 +1,5 @@
 // Screen1.java
-package project;
+package MVC;
 
 import javafx.geometry.*;
 import javafx.scene.Scene;
