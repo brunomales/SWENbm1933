@@ -12,13 +12,11 @@ public class Screen1 {
         Stage screen1Stage = new Stage();
         screen1Stage.setTitle("Screen 1 GUI");
 
-        // Create text areas
         TextArea taFood = new TextArea();
         TextArea taRecipe = new TextArea();
         taFood.setPrefSize(200, 150);
         taRecipe.setPrefSize(200, 150);
 
-        // Create layout for text areas
         HBox textAreasLayout = new HBox(10);
         textAreasLayout.setPadding(new Insets(10));
         textAreasLayout.getChildren().addAll(new ScrollPane(taFood), new ScrollPane(taRecipe));
