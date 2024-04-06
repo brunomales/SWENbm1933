@@ -10,6 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.scene.control.Label;
 
 import java.awt.*;
 import java.io.*;
@@ -41,49 +42,21 @@ public class Screen1 {
         Stage screen1Stage = new Stage();
         screen1Stage.setTitle("Food Collection");
 
-        taFood.setPrefSize(200, 150);
-        taFood.setDisable(true);
-        taFood.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
-
-        taRecipe.setPrefSize(200, 150);
-        taRecipe.setDisable(true);
-        taRecipe.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
-
-        recipeTextArea.setDisable(true);
-        recipeTextArea.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
-
-
+        style();
 
         HBox textAreasLayout = new HBox(10);
         textAreasLayout.setPadding(new Insets(10));
         textAreasLayout.getChildren().addAll(new ScrollPane(taFood), new ScrollPane(taRecipe));
 
-        tfEnterFood.setPromptText("Enter food");
-        tfEnterFood.setStyle("-fx-text-fill: gray;");
-
-        tfEnterCalories.setPromptText("Enter calories");
-        tfEnterCalories.setStyle("-fx-text-fill: gray;");
-
-        tfEnterFat.setPromptText("Enter fat");
-        tfEnterFat.setStyle("-fx-text-fill: gray;");
-
-        tfEnterCarb.setPromptText("Enter carbs");
-        tfEnterCarb.setStyle("-fx-text-fill: gray;");
-
-        tfEnterProtein.setPromptText("Enter  protein");
-        tfEnterProtein.setStyle("-fx-text-fill: gray;");
-
-        tfEnterFood.setPrefWidth(200);
-        btnAddFood.setOnAction(e -> saveDataToCSV());
-        addButtonToRecipe.setOnAction(e -> addFoodToRecipe());
-        addRecipeButton.setOnAction(e -> addRecipe());
-
-        foodNameTextField.setPromptText("Enter Food");
-        recipeNameTextField.setPromptText("Enter recipe name");
-
         VBox textFieldLayout = new VBox(10);
-        textFieldLayout.getChildren().addAll(tfEnterFood,tfEnterCalories,tfEnterFat,tfEnterCarb,tfEnterProtein, btnAddFood);
-        textFieldLayout.setAlignment(Pos.CENTER_LEFT);
+        textFieldLayout.getChildren().addAll(
+                new HBox(10,  tfEnterFood),
+                new HBox(10,  tfEnterCalories),
+                new HBox(10,  tfEnterFat),
+                new HBox(10,  tfEnterCarb),
+                new HBox(10,  tfEnterProtein),
+                btnAddFood
+        );
 
         VBox rightComponentsLayout = new VBox(10);
         rightComponentsLayout.setPadding(new Insets(10));
@@ -96,20 +69,66 @@ public class Screen1 {
                 addRecipeButton
         );
 
-        BorderPane screen1Layout = new BorderPane();
-        screen1Layout.setLeft(textAreasLayout);
-        screen1Layout.setTop(textFieldLayout);
-        screen1Layout.setRight(rightComponentsLayout);
+        /*btnAddFood.setStyle("-fx-background-color: transparent; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-padding: 5px 10px; -fx-text-fill: #102f49;");
+        btnAddFood.setOnMouseEntered(e -> btnAddFood.setStyle("-fx-background-color: #102f49; -fx-text-fill: #fafafa; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px;"));
+        btnAddFood.setOnMouseExited(e -> btnAddFood.setStyle("-fx-background-color: transparent; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-padding: 5px 10px; -fx-text-fill: #102f49;"));*/
 
-        Scene scene = new Scene(screen1Layout, 600, 500);
+
+        HBox mainLayout = new HBox(10);
+        mainLayout.getChildren().addAll(textFieldLayout, textAreasLayout, rightComponentsLayout);
+
+        Scene scene = new Scene(mainLayout, 800, 400);
         screen1Stage.setScene(scene);
         screen1Stage.show();
-
         File file = new File("foods.csv");
         createCSVFile(file);
         readCSVFile(file);
         displayFood(taFood);
         displayRecipe(taRecipe);
+    }
+
+
+
+    private static void style(){
+        taFood.setPrefSize(200, 150);
+        taFood.setDisable(true);
+        taFood.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
+
+        taRecipe.setPrefSize(200, 150);
+        taRecipe.setDisable(true);
+        taRecipe.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
+
+        recipeTextArea.setDisable(true);
+        recipeTextArea.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
+        tfEnterFood.setPromptText("Enter food");
+        tfEnterFood.setStyle("-fx-text-fill: gray;");
+        tfEnterFood.setMaxWidth(150);
+
+        tfEnterCalories.setPromptText("Enter calories");
+        tfEnterCalories.setStyle("-fx-text-fill: gray;");
+        tfEnterCalories.setMaxWidth(150);
+
+        tfEnterFat.setPromptText("Enter fat");
+        tfEnterFat.setStyle("-fx-text-fill: gray;");
+        tfEnterFat.setMaxWidth(150);
+
+        tfEnterCarb.setPromptText("Enter carbs");
+        tfEnterCarb.setStyle("-fx-text-fill: gray;");
+        tfEnterCarb.setMaxWidth(150);
+
+        tfEnterProtein.setPromptText("Enter  protein");
+        tfEnterProtein.setStyle("-fx-text-fill: gray;");
+        tfEnterProtein.setMaxWidth(150);
+
+        tfEnterFood.setPrefWidth(200);
+        btnAddFood.setOnAction(e -> saveDataToCSV());
+        addButtonToRecipe.setOnAction(e -> addFoodToRecipe());
+        addRecipeButton.setOnAction(e -> addRecipe());
+
+        foodNameTextField.setPromptText("Enter Food");
+        recipeNameTextField.setPromptText("Enter recipe name");
+        foodNameTextField.setMaxWidth(150);
+        recipeTextArea.setMaxWidth(150);
     }
     private static void createCSVFile(File file) {
         try {
