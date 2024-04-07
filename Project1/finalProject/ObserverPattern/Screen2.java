@@ -2,6 +2,7 @@ package ObserverPattern;
 
 
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -115,7 +116,7 @@ public class Screen2 {
                                 if (date.equals(date2) && num == 0) {
                                         w = tfWeight.getText().isEmpty() ? defaultWeight : tfWeight.getText();
                                         c = tfCalories.getText().isEmpty() ? defaultCalorieLimit : tfCalories.getText();
-                                        num ++;
+                                        num++;
                                 } else {
                                         try {
                                                 w = findMostRecentWeight(date, file);
@@ -128,8 +129,6 @@ public class Screen2 {
                 } catch (Exception e) {
                         // TODO: handle exception
                 }
-
-                
 
                 String f = tfFood.getText();
                 String co = tfCount.getText();
@@ -221,32 +220,29 @@ public class Screen2 {
                 File file = new File("foods.csv");
                 double calPerc = 0.0;
                 double foodCal = 0.0;
-                
+
                 double calLim = Double.parseDouble(calorieLimit);
                 try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        String[] list = line.split(",");
-                        // Assuming 'b' and 'r' represent specific food categories you're interested in
-                        if (list[0].equals("b") || list[0].equals("r")) {
-                            if (list[1].equals(name)) {
-                                foodCal += (Double.parseDouble(list[2]) * count);
-                            }
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                                String[] list = line.split(",");
+
+                                if (list[0].equals("b") || list[0].equals("r")) {
+                                        if (list[1].equals(name)) {
+                                                foodCal += (Double.parseDouble(list[2]) * count);
+                                        }
+                                }
                         }
-                    }
-                    
+
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                        System.out.println(e.getMessage());
                 }
-                
-                // Convert the fraction of calorie limit consumed into a percentage
+
                 calPerc = (foodCal / calLim) * 100;
-                
-                // You can remove the debug prints or adjust them as necessary
+
                 System.out.println("Calorie Percentage: " + calPerc);
                 return calPerc;
-            }
-            
+        }
 
         private static void display(TextArea textArea) {
                 File file = new File("log.csv");
@@ -270,7 +266,8 @@ public class Screen2 {
                                                 if (list[1].equals("f")) {
                                                         foodEntries.add(list[2]);
                                                         foodCount.add(list[3]);
-                                                        calPerc = calcCaloriesPercentage(list[2], Double.parseDouble(list[3]),
+                                                        calPerc = calcCaloriesPercentage(list[2],
+                                                                        Double.parseDouble(list[3]),
                                                                         calorieLimitForDate);
                                                 }
                                         }
