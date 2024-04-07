@@ -1,16 +1,16 @@
 package ObserverPattern;
 
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,7 +23,7 @@ public class Screen2 {
         private static TextField tfWeight = new TextField();
         private static TextField tfCalories = new TextField();
         private static TextField tfFood = new TextField();
-        private static Button btnAddFood = new Button("Add Food");
+        private static TextField tfCount = new TextField();
         private static TextArea taFood = new TextArea();
         private static TextArea taLog = new TextArea();
         private static TextArea taDateLog = new TextArea();
@@ -31,12 +31,14 @@ public class Screen2 {
         private static Button btnDisplayDate = new Button("Display Date");
 
         public static void display() {
+                resetLogData();
                 Stage screen2Stage = new Stage();
                 screen2Stage.setTitle("Daily Log");
 
                 tfWeight.setPromptText("Enter Weight:");
                 tfCalories.setPromptText("Enter Calories:");
                 tfFood.setPromptText("Enter Food:");
+                tfCount.setPromptText("Enter Count:");
                 taFood.setPrefSize(200, 400);
                 taLog.setPrefSize(200, 400);
 
@@ -48,7 +50,6 @@ public class Screen2 {
 
                 taDateLog.setDisable(true);
                 taDateLog.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
-
                 VBox leftLayout = new VBox(10);
                 leftLayout.getChildren().addAll(
                                 new HBox(10, new Label("ADD DATA TO LOG")),
@@ -56,6 +57,7 @@ public class Screen2 {
                                 new HBox(10, tfWeight),
                                 new HBox(10, tfCalories),
                                 new HBox(10, tfFood),
+                                new HBox(10, tfCount),
                                 btnLogData);
 
                 btnLogData.setOnAction(e -> SaveToCSV());
@@ -96,89 +98,198 @@ public class Screen2 {
         }
 
         public static void SaveToCSV() {
-                String w = tfWeight.getText();
-                String c = tfWeight.getText();
-                String f = tfWeight.getText();
-                if (valid()) {
-                        File file = new File("log.csv");
-                        String date = datePicker.getValue().toString();
-                        String[] dates = date.split("-");
-                        // String line;
-                        // try (BufferedReader br = new BufferedReader(new FileReader(file))){
-                        //         while ((line = br.readLine()) != null) {
-                        //                 String[] list = line.split(",");
-                        //                 if(list[3].equals(dates[3])){}
-                        //         }
-                        // } catch (Exception e) {
+                String date = datePicker.getValue().toString();
+                File file = new File("log.csv");
+                String date2 = "";
+                int num = 0;
+                String w = "";
+                String defaultWeight = "150.0";
+                String defaultCalorieLimit = "2000.0";
+                String c = "";
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 
-                        // };
-                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                                String dataw = dates[0] + "," + dates[1] + "," + dates[2] + "," + "w" + ","
-                                                + w;
-                                String datac = dates[0] + "," + dates[1] + "," + dates[2] + "," + "c" + ","
-                                                + c;
-                                String dataf = dates[0] + "," + dates[1] + "," + dates[2] + "," + "f" + ","
-                                                + f;
-                                writer.write(dataw);
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                                String[] parts = line.split(",");
+                                date2 = parts[0];
+                                if (date.equals(date2) && num == 0) {
+                                        w = tfWeight.getText().isEmpty() ? defaultWeight : tfWeight.getText();
+                                        c = tfCalories.getText().isEmpty() ? defaultCalorieLimit : tfCalories.getText();
+                                        num ++;
+                                } else {
+                                        try {
+                                                w = findMostRecentWeight(date, file);
+                                                c = findMostRecentCalorieLimit(date, file);
+                                        } catch (IOException e) {
+                                                e.printStackTrace();
+                                        }
+                                }
+                        }
+                } catch (Exception e) {
+                        // TODO: handle exception
+                }
+
+                
+
+                String f = tfFood.getText();
+                String co = tfCount.getText();
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+
+                        writer.write(String.join(",", date, "w", w));
+                        writer.newLine();
+
+                        writer.write(String.join(",", date, "c", c));
+                        writer.newLine();
+
+                        if (!f.isEmpty() && !co.isEmpty()) {
+
+                                writer.write(String.join(",", date, "f", f, co));
                                 writer.newLine();
-                                writer.write(datac);
+                        } else if (!f.isEmpty()) {
+                                writer.write(String.join(",", date, "f", f));
                                 writer.newLine();
-                                writer.write(dataf);
-                                writer.newLine();
-                        } catch (IOException e) {
-                                e.printStackTrace();
+                        }
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+                resetLogData();
+        }
+
+        private static String findMostRecentWeight(String selectedDate, File file) throws IOException {
+                String mostRecentWeight = "150.0";
+                String lastDateWithWeight = "";
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                                String[] parts = line.split(",");
+
+                                if (parts[1].equals("w")) {
+
+                                        if (parts[0].compareTo(selectedDate) <= 0) {
+
+                                                if (parts[0].compareTo(lastDateWithWeight) >= 0) {
+                                                        mostRecentWeight = parts[2];
+                                                        lastDateWithWeight = parts[0];
+                                                }
+                                        }
+                                }
                         }
                 }
+                return mostRecentWeight;
         }
 
-        public static boolean valid() {
-                String w = tfWeight.getText();
-                String c = tfWeight.getText();
-                String f = tfWeight.getText();
-                String d = datePicker.getValue().toString();
+        private static String findMostRecentCalorieLimit(String selectedDate, File file) throws IOException {
+                String mostRecentCalorieLimit = "2000.0";
+                String lastDateWithCalorieLimit = "";
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                                String[] parts = line.split(",");
 
-                if (d.length() < 1) {
-                        return false;
-                }
-                if (w.length() < 1) {
+                                if (parts[1].equals("c")) {
 
-                        return false;
+                                        if (parts[0].compareTo(selectedDate) <= 0) {
+
+                                                if (parts[0].compareTo(lastDateWithCalorieLimit) >= 0) {
+                                                        mostRecentCalorieLimit = parts[2];
+                                                        lastDateWithCalorieLimit = parts[0];
+                                                        System.out.println("Food:" + mostRecentCalorieLimit);
+                                                        System.out.println("Food2:" + lastDateWithCalorieLimit);
+                                                }
+                                        }
+                                }
+                        }
                 }
-                if (c.length() < 1) {
-                        return false;
-                }
-                if (f.length() < 1) {
-                        return false;
-                }
-                return true;
+                return mostRecentCalorieLimit;
         }
+
+        private static void resetLogData() {
+                tfWeight.clear();
+                tfCalories.clear();
+                tfFood.clear();
+                tfCount.clear();
+
+                datePicker.setValue(LocalDate.now());
+                datePicker1.setValue(LocalDate.now());
+
+                taFood.clear();
+                taLog.clear();
+        }
+
+        private static double calcCaloriesPercentage(String name, double count, String calorieLimit) {
+                File file = new File("foods.csv");
+                double calPerc = 0.0;
+                double foodCal = 0.0;
+                
+                double calLim = Double.parseDouble(calorieLimit);
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        String[] list = line.split(",");
+                        // Assuming 'b' and 'r' represent specific food categories you're interested in
+                        if (list[0].equals("b") || list[0].equals("r")) {
+                            if (list[1].equals(name)) {
+                                foodCal += (Double.parseDouble(list[2]) * count);
+                            }
+                        }
+                    }
+                    
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                
+                // Convert the fraction of calorie limit consumed into a percentage
+                calPerc = (foodCal / calLim) * 100;
+                
+                // You can remove the debug prints or adjust them as necessary
+                System.out.println("Calorie Percentage: " + calPerc);
+                return calPerc;
+            }
+            
 
         private static void display(TextArea textArea) {
                 File file = new File("log.csv");
-                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                        StringBuilder sb = new StringBuilder();
-                        String line;
-                        System.out.println("Hellow2");
-                        while ((line = br.readLine()) != null) {
-                                String[] list = line.split(",");
-                                String date = datePicker1.getValue().toString();
-                                String[] dates = date.split("-");
-                                System.out.println(list[0] + list[1] + list[2]);
-                                if (list[0].equals(dates[0]) && list[1].equals(dates[1]) && list[2].equals(dates[2])) {
-                                                        if (Objects.equals(list[3], "w")) {
-                                                                sb.append(list[4]).append("\n");
-                                                        }
-                                                        if (Objects.equals(list[3], "f")) {
-                                                                sb.append(list[4]).append("\n");
-                                                        }
-                                                        if (Objects.equals(list[3], "c")) {
-                                                                sb.append(list[4]).append("\n");
-                                                        }
+                String date = datePicker1.getValue().toString();
+                try {
+                        String weightForDate = findMostRecentWeight(date, file);
+                        StringBuilder sb = new StringBuilder("Weight: " + weightForDate + "\n");
+
+                        String calorieLimitForDate = findMostRecentCalorieLimit(date, file);
+                        sb.append("Calorie Limit: " + calorieLimitForDate + "\n");
+
+                        List<String> foodEntries = new ArrayList<>();
+                        List<String> foodCount = new ArrayList<>();
+                        double calPerc = 0;
+
+                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                        String[] list = line.split(",");
+                                        if (list[0].equals(date)) {
+                                                if (list[1].equals("f")) {
+                                                        foodEntries.add(list[2]);
+                                                        foodCount.add(list[3]);
+                                                        calPerc = calcCaloriesPercentage(list[2], Double.parseDouble(list[3]),
+                                                                        calorieLimitForDate);
+                                                }
+                                        }
                                 }
+                        } catch (IOException e) {
+                                e.printStackTrace();
                         }
+
+                        for (String food : foodEntries) {
+                                int num = 0;
+                                sb.append("Food: ").append(food).append("\n");
+                                sb.append("Count: ").append(foodCount.get(num)).append("\n");
+                                num++;
+                        }
+                        sb.append("Calori Percentage for this date: " + calPerc + " %");
                         textArea.setText(sb.toString());
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
         }
+
 }
