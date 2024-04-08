@@ -87,14 +87,12 @@ public class Screen1 {
         displayRecipe(taRecipe);
     }
 
-
-
     private static void style(){
-        taFood.setPrefSize(200, 150);
+        taFood.setPrefSize(200, 350);
         taFood.setDisable(true);
         taFood.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
-        taRecipe.setPrefSize(200, 150);
+        taRecipe.setPrefSize(200, 350);
         taRecipe.setDisable(true);
         taRecipe.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 

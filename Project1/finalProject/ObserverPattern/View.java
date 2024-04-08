@@ -15,6 +15,8 @@ public class View implements Observer {
     private Button screen2Button;
     private BorderPane mainLayout;
 
+    private Label title= new Label("Wellness Manager");
+
     public View(Stage primaryStage, Model model) {
         this.primaryStage = primaryStage;
         initUI();
@@ -25,9 +27,11 @@ public class View implements Observer {
         screen1Button.setMinWidth(200);
         screen2Button.setMinWidth(200);
 
+        title.setStyle("-fx-font-size: 24px; -fx-margin-bottom: 50px;");
+
         VBox buttonLayout = new VBox(10);
         buttonLayout.setAlignment(Pos.CENTER);
-        buttonLayout.getChildren().addAll(screen1Button, screen2Button);
+        buttonLayout.getChildren().addAll(title,screen1Button, screen2Button);
 
         mainLayout = new BorderPane();
         mainLayout.setCenter(buttonLayout);
