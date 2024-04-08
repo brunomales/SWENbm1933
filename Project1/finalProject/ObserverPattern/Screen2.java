@@ -3,6 +3,7 @@ package ObserverPattern;
 
 
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class Screen2 {
+        // Declaration of UI components 
         private static DatePicker datePicker = new DatePicker();
         private static DatePicker datePicker1 = new DatePicker();
         private static TextField tfWeight = new TextField();
@@ -30,12 +32,13 @@ public class Screen2 {
         private static TextArea taDateLog = new TextArea();
         private static Button btnLogData = new Button("Log Data");
         private static Button btnDisplayDate = new Button("Display Date");
-
+        // Displays the screen, setting up the UI
         public static void display() {
                 resetLogData();
                 Stage screen2Stage = new Stage();
                 screen2Stage.setTitle("Daily Log");
 
+                // Setting prompt text for text fields
                 tfWeight.setPromptText("Enter Weight:");
                 tfCalories.setPromptText("Enter Calories:");
                 tfFood.setPromptText("Enter Food:");
@@ -49,6 +52,7 @@ public class Screen2 {
                 taLog.setDisable(true);
                 taLog.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
+                // Layout setup for adding data log
                 taDateLog.setDisable(true);
                 taDateLog.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
                 VBox leftLayout = new VBox(10);
@@ -61,6 +65,7 @@ public class Screen2 {
                                 new HBox(10, tfCount),
                                 btnLogData);
 
+                                // Layout setup for displaying data by date
                 btnLogData.setOnAction(e -> SaveToCSV());
                 HBox rightLayout = new HBox(10);
                 rightLayout.getChildren().addAll(
@@ -73,6 +78,7 @@ public class Screen2 {
                 HBox.setMargin(taLog, new Insets(10, 10, 10, 10));
                 rightLayout.setAlignment(Pos.TOP_LEFT);
 
+                // Main layout setup and scene creation
                 BorderPane layout = new BorderPane();
                 layout.setPadding(new Insets(20));
                 layout.setLeft(leftLayout);
@@ -85,6 +91,7 @@ public class Screen2 {
                 screen2Stage.show();
         }
 
+        // Attempts to create a CSV file and logs its creation status
         private static void createCSVFile(File file) {
                 try {
                         boolean created = file.createNewFile();
@@ -98,7 +105,9 @@ public class Screen2 {
                 }
         }
 
+        // Saves user input to the CSV file, handling different cases for logging data
         public static void SaveToCSV() {
+                // Implementation includes reading from and writing to the CSV file to update or add new log entries
                 String date = datePicker.getValue().toString();
                 File file = new File("log.csv");
                 String date2 = "";
@@ -155,6 +164,7 @@ public class Screen2 {
                 resetLogData();
         }
 
+        // Finds the most recent weight entry before or on the selected date
         private static String findMostRecentWeight(String selectedDate, File file) throws IOException {
                 String mostRecentWeight = "150.0";
                 String lastDateWithWeight = "";
@@ -178,6 +188,7 @@ public class Screen2 {
                 return mostRecentWeight;
         }
 
+        // Finds the most recent calorie limit entry before or on the selected date
         private static String findMostRecentCalorieLimit(String selectedDate, File file) throws IOException {
                 String mostRecentCalorieLimit = "2000.0";
                 String lastDateWithCalorieLimit = "";
@@ -203,6 +214,7 @@ public class Screen2 {
                 return mostRecentCalorieLimit;
         }
 
+        // Resets input fields and sets both date pickers to the current date
         private static void resetLogData() {
                 tfWeight.clear();
                 tfCalories.clear();
@@ -216,6 +228,7 @@ public class Screen2 {
                 taLog.clear();
         }
 
+        // Calculates and returns the percentage of calories consumed for a given food item relative to the calorie limit
         private static double calcCaloriesPercentage(String name, double count, String calorieLimit) {
                 File file = new File("foods.csv");
                 double calPerc = 0.0;
@@ -244,6 +257,7 @@ public class Screen2 {
                 return calPerc;
         }
 
+        // Displays the log for the selected date in the specified text area
         private static void display(TextArea textArea) {
                 File file = new File("log.csv");
                 String date = datePicker1.getValue().toString();
@@ -290,3 +304,4 @@ public class Screen2 {
         }
 
 }
+
