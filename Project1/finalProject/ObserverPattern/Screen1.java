@@ -69,9 +69,6 @@ public class Screen1 {
                 addRecipeButton
         );
 
-        /*btnAddFood.setStyle("-fx-background-color: transparent; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-padding: 5px 10px; -fx-text-fill: #102f49;");
-        btnAddFood.setOnMouseEntered(e -> btnAddFood.setStyle("-fx-background-color: #102f49; -fx-text-fill: #fafafa; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px;"));
-        btnAddFood.setOnMouseExited(e -> btnAddFood.setStyle("-fx-background-color: transparent; -fx-border-color: #102f49; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-padding: 5px 10px; -fx-text-fill: #102f49;"));*/
 
 
         HBox mainLayout = new HBox(10);
