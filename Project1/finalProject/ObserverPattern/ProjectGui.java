@@ -1,4 +1,4 @@
-package ObserverPattern;
+
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -11,7 +11,7 @@ public class ProjectGui extends Application {
 
         Model model = new Model();
 
-        View view = new View(primaryStage, model);
+        View view = new View(model);
         model.addObserver(view);
 
         view.getScreen1Button().setOnAction(e -> {

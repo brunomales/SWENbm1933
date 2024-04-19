@@ -1,17 +1,28 @@
-package ObserverPattern;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.Observable;
 
-public class Model extends Observable {
-    private int currentScreen;
 
-    public int getCurrentScreen() {
-        return currentScreen;
+public class Model {
+    private List<Observer> observers = new ArrayList<>();
+    private List<Food> foods = new ArrayList<>();
+
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
-    public void setCurrentScreen(int currentScreen) {
-        this.currentScreen = currentScreen;
-        setChanged();
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+
+    public void addFood(Food food) {
+        foods.add(food);
         notifyObservers();
     }
 }
