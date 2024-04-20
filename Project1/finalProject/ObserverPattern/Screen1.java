@@ -1,5 +1,4 @@
 
-
 import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -49,8 +48,6 @@ public class Screen1 {
         recipeTextArea.setDisable(true);
         recipeTextArea.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
-
-
         HBox textAreasLayout = new HBox(10);
         textAreasLayout.setPadding(new Insets(10));
         textAreasLayout.getChildren().addAll(new ScrollPane(taFood), new ScrollPane(taRecipe));
@@ -79,7 +76,8 @@ public class Screen1 {
         recipeNameTextField.setPromptText("Enter recipe name");
 
         VBox textFieldLayout = new VBox(10);
-        textFieldLayout.getChildren().addAll(tfEnterFood,tfEnterCalories,tfEnterFat,tfEnterCarb,tfEnterProtein, btnAddFood);
+        textFieldLayout.getChildren().addAll(tfEnterFood, tfEnterCalories, tfEnterFat, tfEnterCarb, tfEnterProtein,
+                btnAddFood);
         textFieldLayout.setAlignment(Pos.CENTER_LEFT);
 
         VBox rightComponentsLayout = new VBox(10);
@@ -90,8 +88,7 @@ public class Screen1 {
                 addButtonToRecipe,
                 recipeTextArea,
                 recipeNameTextField,
-                addRecipeButton
-        );
+                addRecipeButton);
 
         BorderPane screen1Layout = new BorderPane();
         screen1Layout.setLeft(textAreasLayout);
@@ -108,6 +105,7 @@ public class Screen1 {
         displayFood(taFood);
         displayRecipe(taRecipe);
     }
+
     private static void createCSVFile(File file) {
         try {
             boolean created = file.createNewFile();
@@ -120,6 +118,7 @@ public class Screen1 {
             System.err.println("Error occurred while creating the CSV file: " + e.getMessage());
         }
     }
+
     private static List<String[]> readCSVFile(File file) {
         List<String[]> data = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -134,26 +133,41 @@ public class Screen1 {
         }
         return data;
     }
+
     private static void saveDataToCSV() {
-        if (isFoodInputValid()){
-        File file = new File("foods.csv");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-            String data = "b," + tfEnterFood.getText() + "," + tfEnterCalories.getText() + "," + tfEnterFat.getText() + "," + tfEnterCarb.getText() + "," + tfEnterProtein.getText();
-            writer.write(data);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        displayFood(taFood);
-        tfEnterProtein.setText("");
-        tfEnterCarb.setText("");
-        tfEnterCalories.setText("");
-        tfEnterFood.setText("");
-        tfEnterFat.setText("");
-        }else {
+
+        if (isFoodInputValid()) {
+            File file = new File("foods.csv");
+            Food food = foodFactory("Basic");
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                String data = "b," + food.getName() + "," + food.getCalories() + ","
+                        + food.getFat() + "," + food.getCarbohydrates() + "," + food.getProtein();
+                writer.write(data);
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            displayFood(taFood);
+            tfEnterProtein.setText("");
+            tfEnterCarb.setText("");
+            tfEnterCalories.setText("");
+            tfEnterFood.setText("");
+            tfEnterFat.setText("");
+        } else {
             showAlert("Please enter all data and try again!");
         }
     }
+
+    private static Food foodFactory(String devide) {
+        String foodName = tfEnterFood.getText();
+        int calories = Integer.parseInt(tfEnterCalories.getText());
+        int fat = Integer.parseInt(tfEnterFat.getText());
+        int carbs = Integer.parseInt(tfEnterCarb.getText());
+        int protein = Integer.parseInt(tfEnterProtein.getText());
+        return FoodFactory.createFood(foodName, calories, fat, carbs, protein);
+    }
+
     private static void displayFood(TextArea textArea) {
         File file = new File("foods.csv");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -161,7 +175,7 @@ public class Screen1 {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] list = line.split(",");
-                if (Objects.equals(list[0], "b")){
+                if (Objects.equals(list[0], "b")) {
                     sb.append(list[1]).append("\n");
                 }
             }
@@ -170,6 +184,7 @@ public class Screen1 {
             e.printStackTrace();
         }
     }
+
     private static void displayRecipe(TextArea textArea) {
         File file = new File("foods.csv");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -177,7 +192,7 @@ public class Screen1 {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] list = line.split(",");
-                if (Objects.equals(list[0], "r")){
+                if (Objects.equals(list[0], "r")) {
                     sb.append(list[1]).append("\n");
                 }
             }
@@ -186,8 +201,9 @@ public class Screen1 {
             e.printStackTrace();
         }
     }
-    private static void addFoodToRecipe(){
-        if (isFoodToRecInputValid()){
+
+    private static void addFoodToRecipe() {
+        if (isFoodToRecInputValid()) {
             String food = "";
             String foodName = foodNameTextField.getText();
             int recipeSpiner = recipeSpinner.getValue();
@@ -195,101 +211,105 @@ public class Screen1 {
             recipeTextArea.appendText(food);
             foodNameTextField.setText("");
             recipeSpinner.getValueFactory().setValue(0);
-        }
-        else {
+        } else {
             showAlert("Please add food from list!");
         }
     }
+
     private static List<String> convertTextAreaToList(String taData) {
         String[] linesArray = taData.split("\n");
         return new ArrayList<>(Arrays.asList(linesArray));
     }
-    private static void addRecipe(){
-        if (isRecipeInputValid()){
+
+    private static void addRecipe() {
+        if (isRecipeInputValid()) {
             String taData = recipeTextArea.getText();
-        ArrayList list = (ArrayList) convertTextAreaToList(taData);
-        String recipe = "r," + recipeNameTextField.getText() + ",";
-        for (int i = 0; i <list.size(); i++){
-            recipe = recipe + list.get(i) + ",";
-        }
-        saveRecipeToCSV(recipe);
-        displayRecipe(taRecipe);
-        recipeNameTextField.setText("");
-        recipeTextArea.setText("");
-        }else {
+            ArrayList list = (ArrayList) convertTextAreaToList(taData);
+            String recipe = "r," + recipeNameTextField.getText() + ",";
+            for (int i = 0; i < list.size(); i++) {
+                recipe = recipe + list.get(i) + ",";
+            }
+            saveRecipeToCSV(recipe);
+            displayRecipe(taRecipe);
+            recipeNameTextField.setText("");
+            recipeTextArea.setText("");
+        } else {
             showAlert("Please enter all data and try again!");
         }
     }
+
     private static void saveRecipeToCSV(String recipe) {
-            File file = new File("foods.csv");
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                String data = recipe;
-                writer.write(data);
-                writer.newLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            displayRecipe(taRecipe);
+        File file = new File("foods.csv");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            String data = recipe;
+            writer.write(data);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        displayRecipe(taRecipe);
     }
 
-    public static boolean isFoodInputValid(){
+    public static boolean isFoodInputValid() {
         String foodName = tfEnterFood.getText();
         String calories = tfEnterCalories.getText();
         String fat = tfEnterFat.getText();
         String carb = tfEnterCarb.getText();
         String protein = tfEnterProtein.getText();
 
-        if (foodName.length() < 1){
+        if (foodName.length() < 1) {
             return false;
         }
-        if (fat.length() < 1){
+        if (fat.length() < 1) {
             return false;
         }
-        if (carb.length() < 1){
+        if (carb.length() < 1) {
             return false;
         }
-        if (calories.length() < 1){
+        if (calories.length() < 1) {
             return false;
         }
-        if (protein.length() < 1){
+        if (protein.length() < 1) {
             return false;
         }
         return true;
     }
-    public static boolean isFoodToRecInputValid(){
+
+    public static boolean isFoodToRecInputValid() {
         String foodName = foodNameTextField.getText();
         int count = recipeSpinner.getValue();
 
-        if (count < 1){
+        if (count < 1) {
             return false;
         }
         String taText = taFood.getText();
         String[] foods = taText.split("\n");
-        for (int i = 0; i < foods.length; i++){
+        for (int i = 0; i < foods.length; i++) {
             System.out.println(foods[i]);
-            if (Objects.equals(foodName, foods[i])){
+            if (Objects.equals(foodName, foods[i])) {
                 return true;
             }
         }
         return false;
     }
-    public static boolean isRecipeInputValid(){
+
+    public static boolean isRecipeInputValid() {
         String recipeName = recipeNameTextField.getText();
         String textArea = recipeTextArea.getText();
 
-        if (recipeName.length() < 1){
+        if (recipeName.length() < 1) {
             return false;
         }
-        if (textArea.length() < 1){
+        if (textArea.length() < 1) {
             return false;
         }
         return true;
     }
-    private static void showAlert(String message){
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setContentText(message);
-            alert.show();
+
+    private static void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setContentText(message);
+        alert.show();
     }
 }
-

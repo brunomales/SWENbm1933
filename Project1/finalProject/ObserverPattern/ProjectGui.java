@@ -2,9 +2,13 @@
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ProjectGui extends Application {
+    private static Button addFood = new Button ("AddFood");
+    private static Button dLog = new Button ("Daily Log");
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Screen Chooser");
@@ -12,18 +16,18 @@ public class ProjectGui extends Application {
         Model model = new Model();
 
         View view = new View(model);
-        model.addObserver(view);
+        model.registerObserver(view);
+        VBox box = new VBox();
+        box.getChildren().addAll(addFood, dLog);
 
-        view.getScreen1Button().setOnAction(e -> {
-            model.setCurrentScreen(1);
+        addFood.setOnAction(e -> {
             Screen1.display();
         });
-        view.getScreen2Button().setOnAction(e -> {
-            model.setCurrentScreen(2);
+        dLog.setOnAction(e -> {
             Screen2.display();
         });
 
-        Scene scene = new Scene(view.getMainLayout(), 300, 200);
+        Scene scene = new Scene(box, 300, 200);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
