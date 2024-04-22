@@ -1,40 +1,25 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observer;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
+public class Model {
+    private Food food;
+    private PropertyChangeSupport support;
 
-
-@SuppressWarnings("deprecation")
-public class Model implements Subject{
-  
-    private List<Food> foods = new ArrayList<>();
-
-    private List<Observer> observers = new ArrayList<>();
-
-    @Override
-    public void registerObserver(Observer o) {
-        observers.add(o);
+    public Model() {
+        support = new PropertyChangeSupport(this);
     }
 
-    public void removeObserver(Observer o) {
-        observers.remove(o);
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
     }
 
-    public void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.update(null, observer);
-        }
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        support.removePropertyChangeListener(pcl);
     }
 
     public void addFood(Food food) {
-        foods.add(food);
-        notifyObservers();
+        Food oldFood = this.food;
+        this.food = food;
+        support.firePropertyChange("food", oldFood, food);
     }
-
-    public String getData() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getData'");
-    }
-
-    
 }

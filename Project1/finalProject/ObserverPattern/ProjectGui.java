@@ -9,16 +9,13 @@ import javafx.stage.Stage;
 public class ProjectGui extends Application {
     private static Button addFood = new Button ("AddFood");
     private static Button dLog = new Button ("Daily Log");
+    private static Button pLog = new Button ("Progres");
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Screen Chooser");
 
-        Model model = new Model();
-
-        View view = new View(model);
-        model.registerObserver(view);
         VBox box = new VBox();
-        box.getChildren().addAll(addFood, dLog);
+        box.getChildren().addAll(addFood, dLog, pLog);
 
         addFood.setOnAction(e -> {
             Screen1.display();
@@ -26,6 +23,10 @@ public class ProjectGui extends Application {
         dLog.setOnAction(e -> {
             Screen2.display();
         });
+        pLog.setOnAction(e -> {
+            Progress.display();
+        });
+        
 
         Scene scene = new Scene(box, 300, 200);
         primaryStage.setScene(scene);

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Observer;
 
 public class Screen1 {
 
@@ -23,6 +24,10 @@ public class Screen1 {
     private static TextField tfEnterFat = new TextField();
     private static TextField tfEnterCarb = new TextField();
     private static TextField tfEnterProtein = new TextField();
+    private static TextField tfEnterCalories2 = new TextField();
+    private static TextField tfEnterFat3 = new TextField();
+    private static TextField tfEnterCarb4 = new TextField();
+    private static TextField tfEnterProtein5 = new TextField();
     private static Button addButtonToRecipe = new Button("Add food to recipe");
     private static Button addRecipeButton = new Button("Add Recipe");
     private static Spinner<Integer> recipeSpinner = new Spinner<>(0, 100, 0);
@@ -31,7 +36,10 @@ public class Screen1 {
     private static TextArea recipeTextArea = new TextArea();
     private static TextArea taFood = new TextArea();
     private static TextArea taRecipe = new TextArea();
+    private static TextArea taRecipe1 = new TextArea();
     private static Button btnAddFood = new Button("Add Food");
+
+    private static List<Food> ingredients = new ArrayList<>();
 
     public static void display() {
         Stage screen1Stage = new Stage();
@@ -44,6 +52,9 @@ public class Screen1 {
         taRecipe.setPrefSize(200, 150);
         taRecipe.setDisable(true);
         taRecipe.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
+
+        taRecipe1.setDisable(true);
+        taRecipe1.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
         recipeTextArea.setDisable(true);
         recipeTextArea.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
@@ -67,12 +78,23 @@ public class Screen1 {
         tfEnterProtein.setPromptText("Enter  protein");
         tfEnterProtein.setStyle("-fx-text-fill: gray;");
 
+        tfEnterCalories2.setPromptText("Enter calories");
+        tfEnterCalories2.setStyle("-fx-text-fill: gray;");
+
+        tfEnterFat3.setPromptText("Enter fat");
+        tfEnterFat3.setStyle("-fx-text-fill: gray;");
+
+        tfEnterCarb4.setPromptText("Enter carbs");
+        tfEnterCarb4.setStyle("-fx-text-fill: gray;");
+
+        tfEnterProtein5.setPromptText("Enter  protein");
+        tfEnterProtein5.setStyle("-fx-text-fill: gray;");
         tfEnterFood.setPrefWidth(200);
         btnAddFood.setOnAction(e -> saveDataToCSV());
         addButtonToRecipe.setOnAction(e -> addFoodToRecipe());
         addRecipeButton.setOnAction(e -> addRecipe());
 
-        foodNameTextField.setPromptText("Enter Food");
+        foodNameTextField.setPromptText("Enter Food1");
         recipeNameTextField.setPromptText("Enter recipe name");
 
         VBox textFieldLayout = new VBox(10);
@@ -84,10 +106,11 @@ public class Screen1 {
         rightComponentsLayout.setPadding(new Insets(10));
         rightComponentsLayout.getChildren().addAll(
                 recipeSpinner,
-                foodNameTextField,
+                foodNameTextField, tfEnterCalories2, tfEnterFat3, tfEnterCarb4, tfEnterProtein5,
                 addButtonToRecipe,
                 recipeTextArea,
                 recipeNameTextField,
+                taRecipe1,
                 addRecipeButton);
 
         BorderPane screen1Layout = new BorderPane();
@@ -135,38 +158,45 @@ public class Screen1 {
     }
 
     private static void saveDataToCSV() {
-
         if (isFoodInputValid()) {
-            File file = new File("foods.csv");
-            Food food = foodFactory("Basic");
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                String data = "b," + food.getName() + "," + food.getCalories() + ","
-                        + food.getFat() + "," + food.getCarbohydrates() + "," + food.getProtein();
-                writer.write(data);
-                writer.newLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+            try {
+                String name = tfEnterFood.getText().trim();
+                int calories = Integer.parseInt(tfEnterCalories.getText().trim());
+                int fat = Integer.parseInt(tfEnterFat.getText().trim());
+                int carbs = Integer.parseInt(tfEnterCarb.getText().trim());
+                int protein = Integer.parseInt(tfEnterProtein.getText().trim());
+                Food food = FoodFactory.createFood("basic", name, null, calories, fat, carbs, protein);
+                Model model = new Model();
+                View view = new View();
+                model.addPropertyChangeListener(view);
+                model.addFood(food);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format: " + e.getMessage());
             }
-            displayFood(taFood);
+
+            // Clear the fields
             tfEnterProtein.setText("");
             tfEnterCarb.setText("");
             tfEnterCalories.setText("");
             tfEnterFood.setText("");
             tfEnterFat.setText("");
+            // displayFood(taFood);
         } else {
             showAlert("Please enter all data and try again!");
         }
     }
-
-    private static Food foodFactory(String devide) {
-        String foodName = tfEnterFood.getText();
-        int calories = Integer.parseInt(tfEnterCalories.getText());
-        int fat = Integer.parseInt(tfEnterFat.getText());
-        int carbs = Integer.parseInt(tfEnterCarb.getText());
-        int protein = Integer.parseInt(tfEnterProtein.getText());
-        return FoodFactory.createFood(foodName, calories, fat, carbs, protein);
+    public void appendText(String text) {
+        taFood.appendText(text + "\n");
     }
+
+    // private static Food foodFactory(String devide) {
+    // String foodName = tfEnterFood.getText();
+    // int calories = Integer.parseInt(tfEnterCalories.getText());
+    // int fat = Integer.parseInt(tfEnterFat.getText());
+    // int carbs = Integer.parseInt(tfEnterCarb.getText());
+    // int protein = Integer.parseInt(tfEnterProtein.getText());
+    // return FoodFactory.createFood(foodName, calories, fat, carbs, protein);
+    // }
 
     private static void displayFood(TextArea textArea) {
         File file = new File("foods.csv");
@@ -204,11 +234,14 @@ public class Screen1 {
 
     private static void addFoodToRecipe() {
         if (isFoodToRecInputValid()) {
-            String food = "";
             String foodName = foodNameTextField.getText();
-            int recipeSpiner = recipeSpinner.getValue();
-            food = foodName + "," + recipeSpiner + "\n";
-            recipeTextArea.appendText(food);
+            int calories = Integer.parseInt(tfEnterCalories2.getText()) * recipeSpinner.getValue();
+            int fat = Integer.parseInt(tfEnterFat3.getText()) * recipeSpinner.getValue();
+            int carbs = Integer.parseInt(tfEnterCarb4.getText()) * recipeSpinner.getValue();
+            int protein = Integer.parseInt(tfEnterProtein5.getText()) * recipeSpinner.getValue();
+            Food food = FoodFactory.createFood("basic", foodName, null, calories, fat, carbs, protein);
+            ingredients.add(food);
+            recipeTextArea.appendText(food.getName() + "," + recipeSpinner.getValue() + "\n");
             foodNameTextField.setText("");
             recipeSpinner.getValueFactory().setValue(0);
         } else {
@@ -221,16 +254,25 @@ public class Screen1 {
         return new ArrayList<>(Arrays.asList(linesArray));
     }
 
+
+    @SuppressWarnings("rawtypes")
     private static void addRecipe() {
         if (isRecipeInputValid()) {
+            String recipeName = recipeNameTextField.getText();
+            Food recipe1 = FoodFactory.createFood("recipe", recipeName, ingredients, 0, 0, 0, 0);
+            taRecipe1.appendText(
+                    "Recipe: " + recipe1.getName() + " with " + ingredients.size() + " ingredients created and Total:"
+                            + "\n" + "Calories: " + recipe1.getCalories() + "\n" + "Fat: " + recipe1.getFat() + "\n"
+                            + "Protein: " + recipe1.getProtein());
             String taData = recipeTextArea.getText();
             ArrayList list = (ArrayList) convertTextAreaToList(taData);
-            String recipe = "r," + recipeNameTextField.getText() + ",";
+            String recipe = "r," + recipe1.getName() + ",";
             for (int i = 0; i < list.size(); i++) {
                 recipe = recipe + list.get(i) + ",";
             }
-            saveRecipeToCSV(recipe);
-            displayRecipe(taRecipe);
+            saveRecipeToCSV(recipe + "," + recipe1.getCalories() + "," + recipe1.getCarbohydrates() + ","
+                    + recipe1.getFat() + "," + recipe1.getProtein());
+            ingredients.clear();
             recipeNameTextField.setText("");
             recipeTextArea.setText("");
         } else {
@@ -247,7 +289,6 @@ public class Screen1 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        displayRecipe(taRecipe);
     }
 
     public static boolean isFoodInputValid() {

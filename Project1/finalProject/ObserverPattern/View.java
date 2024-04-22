@@ -1,33 +1,33 @@
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
-import java.util.Observable;
-import java.util.Observer;
-
-@SuppressWarnings("deprecation")
-public class View implements Observer {
-    private Model model;
-
-    public View(Model model) {
-        this.model = model;
-        model.registerObserver(this);
-    }
-
-   
-
-    private void displayData(String data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'displayData'");
-    }
-
-
-
+public class View implements PropertyChangeListener {
     @Override
-    public void update(Observable o, Object arg) {
-        // Fetch new data from the model
-        String data = model.getData();
-        // Display the new data
-        displayData(data);
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getNewValue() instanceof Food) {
+            Food food = (Food) evt.getNewValue();
+            display(food);
+        }
     }
 
- 
-    
+    private void display(Food food) {
+        File file = new File("foods.csv");
+        Screen1 screen = new Screen1();
+        Progress progress = new Progress();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            String data = String.format("b,%s,%d,%d,%d,%d",
+                food.getName(), food.getCalories(), food.getFat(),
+                food.getCarbohydrates(), food.getProtein());
+            writer.write(data);
+            writer.newLine();
+            screen.appendText(food.getName());
+            progress.appendText(food.getName());
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
 }
