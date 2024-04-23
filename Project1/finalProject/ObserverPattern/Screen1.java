@@ -1,4 +1,3 @@
-
 import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -46,11 +45,11 @@ public class Screen1 {
         screen1Stage.setTitle("Food Collection");
 
         taFood.setPrefSize(200, 150);
-        taFood.setDisable(true);
+        //taFood.setDisable(true);
         taFood.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
         taRecipe.setPrefSize(200, 150);
-        taRecipe.setDisable(true);
+        //taRecipe.setDisable(true);
         taRecipe.setStyle("-fx-opacity: 1.0; -fx-text-fill: black;");
 
         taRecipe1.setDisable(true);
@@ -118,7 +117,7 @@ public class Screen1 {
         screen1Layout.setTop(textFieldLayout);
         screen1Layout.setRight(rightComponentsLayout);
 
-        Scene scene = new Scene(screen1Layout, 600, 500);
+        Scene scene = new Scene(screen1Layout, 600, 800);
         screen1Stage.setScene(scene);
         screen1Stage.show();
 

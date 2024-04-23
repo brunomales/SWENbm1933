@@ -93,6 +93,7 @@ public class Progress {
         HBox box3 = new HBox();
         box3.getChildren().addAll(tfWeight, tfCalGoal, tfProteinGoal, log, logArea);
 
+        logArea.setMaxWidth(180);
         // Create a VBox layout
         VBox sidebar = new VBox();
         sidebar.setSpacing(10); // Space between elements
