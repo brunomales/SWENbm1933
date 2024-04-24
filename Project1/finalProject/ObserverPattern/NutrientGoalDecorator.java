@@ -11,8 +11,6 @@ public class NutrientGoalDecorator extends LogEntryDecorator {
 
     @Override
     public String displayLog() {
-        return logEntry.displayLog() + " Calorie Goal: " + calorieGoal + " kcal, Protein Goal: " + proteinGoal + " g\n"
-                + "Left calories to take: " + calorieGoal  + "\n" + "Left calories to take: "
-                + proteinGoal  + "\n";
+        return logEntry.displayLog() + " Calorie Goal: " + calorieGoal + " kcal \n";
     }
 }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observer;
 
 public class Screen1 {
 
@@ -179,7 +178,6 @@ public class Screen1 {
             tfEnterCalories.setText("");
             tfEnterFood.setText("");
             tfEnterFat.setText("");
-            // displayFood(taFood);
         } else {
             showAlert("Please enter all data and try again!");
         }
@@ -187,15 +185,6 @@ public class Screen1 {
     public void appendText(String text) {
         taFood.appendText(text + "\n");
     }
-
-    // private static Food foodFactory(String devide) {
-    // String foodName = tfEnterFood.getText();
-    // int calories = Integer.parseInt(tfEnterCalories.getText());
-    // int fat = Integer.parseInt(tfEnterFat.getText());
-    // int carbs = Integer.parseInt(tfEnterCarb.getText());
-    // int protein = Integer.parseInt(tfEnterProtein.getText());
-    // return FoodFactory.createFood(foodName, calories, fat, carbs, protein);
-    // }
 
     private static void displayFood(TextArea textArea) {
         File file = new File("foods.csv");

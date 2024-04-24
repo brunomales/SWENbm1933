@@ -26,12 +26,13 @@ public class Progress {
     private static TextField food = new TextField();
     private static TextField exercise = new TextField();
     private static TextField calBurn = new TextField();
-    private static TextField weight = new TextField();
     private static Button eat = new Button("Eat");
-    private static Button burn = new Button("Burn");
+    private static Button burn = new Button("Save Exercise");
     private static TextArea taExerscise = new TextArea();
     private static TextArea taFood = new TextArea();
     static LocalDate date;
+    private static ProgressBar progressBar = new ProgressBar(0);
+    private static ProgressBar progressBar1 = new ProgressBar(0);
 
     static List<Exe> exes = new ArrayList<Exe>();
 
@@ -46,7 +47,7 @@ public class Progress {
 
     private static TextArea logArea = new TextArea();
 
-    private static Button burned = new Button("Burn3d");
+    private static Button burned = new Button("Burned");
 
     public static void display() {
         Stage primaryStage = new Stage();
@@ -60,9 +61,6 @@ public class Progress {
 
         calBurn.setPromptText("Calories burned");
         calBurn.setStyle("-fx-text-fill: gray;");
-
-        weight.setPromptText("Your Weight");
-        weight.setStyle("-fx-text-fill: gray;");
 
         tfCalGoal.setPromptText("Calories Goal");
         tfCalGoal.setStyle("-fx-text-fill: gray;");
@@ -79,6 +77,8 @@ public class Progress {
         HBox box = new HBox();
         box.getChildren().addAll(food, eat);
 
+        eat.setOnAction(e -> eat());
+
         log.setOnAction(e -> logData());
 
         burn.setOnAction(e -> saveExercise());
@@ -86,7 +86,7 @@ public class Progress {
         burned.setOnAction(e -> burned());
 
         HBox box1 = new HBox();
-        box1.getChildren().addAll(exercise, calBurn, weight, tfTime, burn, burned);
+        box1.getChildren().addAll(exercise, calBurn, tfTime, burn, burned);
 
         HBox box2 = new HBox();
         box2.getChildren().addAll(datePicker, datePicker1);
@@ -96,22 +96,18 @@ public class Progress {
         logArea.setMaxWidth(180);
         // Create a VBox layout
         VBox sidebar = new VBox();
-        sidebar.setSpacing(10); // Space between elements
-
-        // Create a ProgressBar
-        ProgressBar progressBar = new ProgressBar(0); // Initial progress
+        sidebar.setSpacing(10);
 
         // Add the ProgressBar to the VBox
-        sidebar.getChildren().add(progressBar);
+        sidebar.getChildren().addAll(progressBar, progressBar1);
 
-        // Update the progress value (Example: set to 50%)
-        progressBar.setProgress(0.3456);
         VBox box11 = new VBox();
         box11.getChildren().addAll(box, box1, sidebar, taExerscise, box2, box3, taFood);
 
         File file = new File("exercise.csv");
         createCSVFile(file);
         displayFood(taFood);
+        displayExe();
 
         Scene scene = new Scene(box11, 700, 700);
         primaryStage.setScene(scene);
@@ -149,20 +145,19 @@ public class Progress {
         } else {
             showAlert("Please enter all data and try again!");
         }
+        resetAll();
     }
 
     public static void burned() {
-      
-            int yourWeight = Integer.parseInt(tfWeight.getText());
-            Exe ex = FoodFactory.creatExercise("", "recipe", exes, 0);
+        int yourWeight = Integer.parseInt(tfWeight.getText());
+        Exe ex = FoodFactory.creatExercise("", "recipe", exes, 0);
 
-            LogEntry log = new LogEntry(datePicker1.getValue(), exes);
-            LogEntry logWithWeight = new WeightDecorator(log, yourWeight, ex.getIntensity());
-            LogEntry logWithGoals = new NutrientGoalDecorator(logWithWeight, Integer.parseInt(tfCalGoal.getText()),
-                    Integer.parseInt(tfProteinGoal.getText()));
-            logArea.appendText(logWithGoals.displayLog());
-        
-
+        LogEntry log = new LogEntry(exes);
+        LogEntry logWithWeight = new WeightDecorator(log, yourWeight, ex.getIntensity());
+        LogEntry logWithGoals = new NutrientGoalDecorator(logWithWeight, Integer.parseInt(tfCalGoal.getText()),
+                Integer.parseInt(tfProteinGoal.getText()));
+        logArea.appendText(logWithGoals.displayLog());
+        resetAll();
     }
 
     public static boolean isFoodInputValid() {
@@ -194,6 +189,7 @@ public class Progress {
             }
         } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         String[] linesArray = sb.split("\n");
@@ -205,12 +201,51 @@ public class Progress {
         return false;
     }
 
+    private static double percent;
+    private static double percentW;
+
+    @SuppressWarnings("unlikely-arg-type")
+    private static void eat() {
+        String foodName = food.getText();
+        File file = new File("foods.csv");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] list = line.split(",");
+                if (Objects.equals(list[0], "b")) {
+                    if (Objects.equals(foodName, list[1])) {
+                        percent += Double.parseDouble(list[2]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Please enter all data and try again!");
+        }
+        File file1 = new File("log.csv");
+        try (BufferedReader br = new BufferedReader(new FileReader(file1))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] list = line.split(",");
+                if (Objects.equals(list[0], datePicker1.getValue())) {
+                    System.out.println("Suceccesfully");
+                    percentW += Double.parseDouble(list[4]);
+                    progressBar.setProgress(percent / percentW);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Please enter right date and try again!");
+        }
+        resetAll();
+    }
+
     private static void logData() {
         date = datePicker.getValue();
         String foodName = food.getText();
         int weight = Integer.parseInt(tfWeight.getText());
         int cal = Integer.parseInt(tfCalGoal.getText());
-        int protein = Integer.parseInt(tfProteinGoal.getText());
         File file = new File("log.csv");
         createCSVFile(file);
         String line = date + ", w, " + weight + ", c, " + cal + ", f, " + foodName;
@@ -220,6 +255,9 @@ public class Progress {
         } catch (IOException e) {
             System.out.println(e);
         }
+        String str = "For date: " + date + ", Cal limit: " + weight;
+        logArea.appendText(str);
+        resetAll();
     }
 
     public void appendText(String text) {
@@ -240,7 +278,41 @@ public class Progress {
             textArea.setText(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
+            resetAll();
         }
+    }
+
+    private static void displayExe() {
+        File file = new File("exercise.csv");
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] list = line.split(",");
+                if (Objects.equals(list[0], "e")) {
+                    sb.append("Exercise: " + list[1]  + ", CalBurned: " + list[2]  +"\n");
+                }
+            }
+            taExerscise.setText(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            resetAll();
+        }
+    }
+
+    private static void resetAll() {
+        // Clear text fields
+        food.setText("");
+        exercise.setText("");
+        calBurn.setText("");
+        tfWeight.setText("");
+        tfCalGoal.setText("");
+        tfProteinGoal.setText("");
+        tfTime.setText("");
+
+        // Reset date pickers
+        datePicker.setValue(null); // Set to null or you can set to LocalDate.now() for today's date
+        datePicker1.setValue(null);
     }
 
     private static void showAlert(String message) {

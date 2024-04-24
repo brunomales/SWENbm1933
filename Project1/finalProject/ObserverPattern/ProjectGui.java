@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 
 public class ProjectGui extends Application {
     private static Button addFood = new Button("AddFood");
-    private static Button dLog = new Button("Daily Log");
     private static Button pLog = new Button("Progress");
 
     @Override
@@ -22,13 +21,10 @@ public class ProjectGui extends Application {
 
         VBox box = new VBox(10);
         box.setAlignment(Pos.CENTER);
-        box.getChildren().addAll(titleBox, addFood, dLog, pLog); // Include titleBox in the VBox
+        box.getChildren().addAll(titleBox, addFood, pLog); // Include titleBox in the VBox
 
         addFood.setOnAction(e -> {
             Screen1.display();
-        });
-        dLog.setOnAction(e -> {
-            Screen2.display();
         });
         pLog.setOnAction(e -> {
             Progress.display();

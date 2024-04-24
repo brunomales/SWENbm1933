@@ -2,7 +2,7 @@ public abstract class LogEntryDecorator extends LogEntry {
     protected LogEntry logEntry;
 
     public LogEntryDecorator(LogEntry logEntry) {
-        super(logEntry.getDate(),  logEntry.getExercises());
+        super( logEntry.getExercises());
         this.logEntry = logEntry;
     }
 
