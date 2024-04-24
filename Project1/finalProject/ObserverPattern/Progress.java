@@ -132,7 +132,7 @@ public class Progress {
             File file = new File("exercise.csv");
             String exName = exercise.getText();
             int burn = Integer.parseInt(calBurn.getText());
-            Exe exer = FoodFactory.creatExercise(exName, "basic", null, burn / Integer.parseInt(tfTime.getText()));
+            Exe exer = FoodFactory.creatExercise(exName, "basic", null, (burn / 60) * Integer.parseInt(tfTime.getText()));
             exes.add(exer);
             taExerscise.appendText("Exercise Name: " + exer.getName() + " & CalBurn: " + exer.getIntensity() + "\n");
             String line = "e," + exer.getName() + "," + exer.getIntensity();
@@ -151,11 +151,11 @@ public class Progress {
     public static void burned() {
         int yourWeight = Integer.parseInt(tfWeight.getText());
         Exe ex = FoodFactory.creatExercise("", "recipe", exes, 0);
-
+        int calGoal = Integer.parseInt(tfCalGoal.getText());
         LogEntry log = new LogEntry(exes);
         LogEntry logWithWeight = new WeightDecorator(log, yourWeight, ex.getIntensity());
-        LogEntry logWithGoals = new NutrientGoalDecorator(logWithWeight, Integer.parseInt(tfCalGoal.getText()),
-                Integer.parseInt(tfProteinGoal.getText()));
+        LogEntry logWithGoals = new NutrientGoalDecorator(logWithWeight, calGoal,
+                Integer.parseInt(tfProteinGoal.getText()), (calGoal - ex.getIntensity()));
         logArea.appendText(logWithGoals.displayLog());
         resetAll();
     }
@@ -208,7 +208,7 @@ public class Progress {
     private static void eat() {
         String foodName = food.getText();
         File file = new File("foods.csv");
-
+        int calGoal = Integer.parseInt(tfCalGoal.getText());
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -216,27 +216,13 @@ public class Progress {
                 if (Objects.equals(list[0], "b")) {
                     if (Objects.equals(foodName, list[1])) {
                         percent += Double.parseDouble(list[2]);
+                        progressBar.setProgress(percent / calGoal);
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
             showAlert("Please enter all data and try again!");
-        }
-        File file1 = new File("log.csv");
-        try (BufferedReader br = new BufferedReader(new FileReader(file1))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] list = line.split(",");
-                if (Objects.equals(list[0], datePicker1.getValue())) {
-                    System.out.println("Suceccesfully");
-                    percentW += Double.parseDouble(list[4]);
-                    progressBar.setProgress(percent / percentW);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Please enter right date and try again!");
         }
         resetAll();
     }
