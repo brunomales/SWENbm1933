@@ -31,6 +31,7 @@ public class Progress {
     private static TextArea taExerscise = new TextArea();
     private static TextArea taFood = new TextArea();
     static LocalDate date;
+    static LocalDate date1;
     private static ProgressBar progressBar = new ProgressBar(0);
     private static ProgressBar progressBar1 = new ProgressBar(0);
 
@@ -48,6 +49,7 @@ public class Progress {
     private static TextArea logArea = new TextArea();
 
     private static Button burned = new Button("Burned");
+    private static Button burned1 = new Button("RealLogData");
 
     public static void display() {
         Stage primaryStage = new Stage();
@@ -84,14 +86,16 @@ public class Progress {
         burn.setOnAction(e -> saveExercise());
 
         burned.setOnAction(e -> burned());
+        burned1.setOnAction(e -> logData1());
 
         HBox box1 = new HBox();
         box1.getChildren().addAll(exercise, calBurn, tfTime, burn, burned);
 
+
         HBox box2 = new HBox();
         box2.getChildren().addAll(datePicker, datePicker1);
         HBox box3 = new HBox();
-        box3.getChildren().addAll(tfWeight, tfCalGoal, tfProteinGoal, log, logArea);
+        box3.getChildren().addAll(tfWeight, tfCalGoal, tfProteinGoal, log, burned1, logArea);
 
         logArea.setMaxWidth(180);
         // Create a VBox layout
@@ -109,7 +113,7 @@ public class Progress {
         displayFood(taFood);
         displayExe();
 
-        Scene scene = new Scene(box11, 700, 700);
+        Scene scene = new Scene(box11, 800, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -245,6 +249,28 @@ public class Progress {
         logArea.appendText(str);
         resetAll();
     }
+
+    private static void logData1(){
+        File file = new File("log.csv");
+        date1 = datePicker1.getValue();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            String ste;
+            while ((line = br.readLine()) != null) {
+                String[] list = line.split(",");
+                ste = ""+date1;
+                if (Objects.equals(list[0], ste)) {
+                    String str = "Date: " + list[0] + ", Weight: " + list[2] + ", Cal limit: " + list[4] + ", Food: " + list[6];
+                    logArea.appendText(str);
+                    resetAll();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Please enter all data and try again!");
+        }
+    }
+
 
     public void appendText(String text) {
         taFood.appendText(text + "\n");
